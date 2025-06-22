@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>wow</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --blue: #00bfff;
+      --dark: #0a0f1a;
+      --neon: #ff073a;
+      --flame: #ff4500;
+      --web: #e0e0e0;
+      --ben10green: #00ff00;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--dark);
+      color: #e0e0e0;
+      overflow-x: hidden;
+      transition: background 0.4s ease;
+    }
+
+    h1, h2, h3 {
+      font-family: 'Bebas Neue', cursive;
+      letter-spacing: 1px;
+    }
+
+    a {
+      color: var(--blue);
+      text-decoration: none;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    #start-screen {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(circle, #001f3f, #000);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      z-index: 10;
+      text-align: center;
+      padding: 2rem;
+    }
+
+    #start-text {
+      color: white;
+      font-size: 2rem;
+      font-weight: bold;
+      margin-bottom: 1.5rem;
+    }
+
+    #goal-scene {
+      position: relative;
+      width: 300px;
+      height: 200px;
+      background: #111;
+      border: 4px solid var(--blue);
+      border-radius: 12px;
+    }
+
+    .goal-post {
+      position: absolute;
+      width: 100px;
+      height: 100px;
+      border: 3px solid white;
+      top: 50px;
+      right: 0;
+      border-left: none;
+    }
+
+    .ball {
+      width: 20px;
+      height: 20px;
+      background: white;
+      border-radius: 50%;
+      position: absolute;
+      bottom: 10px;
+      left: 20px;
+    }
+
+    #shoot-btn {
+      margin-top: 1rem;
+      padding: .75rem 1.5rem;
+      border: 2px solid var(--blue);
+      background: transparent;
+      color: var(--blue);
+      font-weight: bold;
+      border-radius: 10px;
+    }
+
+    @keyframes shoot {
+      0% { left: 20px; bottom: 10px; }
+      50% { bottom: 100px; }
+      100% { left: 230px; bottom: 60px; }
+    }
+
+    #main-content {
+      display: none;
+    }
+
+    header {
+      text-align: center;
+      padding: 3rem 1rem;
+      transition: all 0.5s ease;
+    }
+
+    header h2 {
+      font-size: 3rem;
+      color: var(--blue);
+      margin-bottom: 2rem;
+    }
+
+    #hype-buttons {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      transition: all 0.5s ease;
+    }
+
+    #hype-buttons button {
+      padding: 1.2rem 2rem;
+      font-size: 1.3rem;
+      border: 2px solid var(--blue);
+      background: transparent;
+      color: var(--blue);
+      border-radius: 12px;
+      font-weight: bold;
+      transition: all 0.4s ease;
+    }
+
+    .compact #hype-buttons button {
+      padding: 0.6rem 1rem;
+      font-size: 1rem;
+    }
+
+    .compact header {
+      padding: 1rem;
+    }
+
+    .section {
+      display: none;
+      padding: 2rem;
+      min-height: 60vh;
+    }
+
+    .section.active {
+      display: block;
+      transition: all .3s ease;
+    }
+
+    .green-overlay, .overlay-text {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .green-overlay {
+      background: rgba(0, 255, 0, 0.15);
+      backdrop-filter: blur(4px);
+      animation: greenFlash 0.3s ease-in-out forwards;
+    }
+
+    .overlay-text {
+      color: white;
+      font-size: 2rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px #000;
+      opacity: 1;
+      animation: fadeOverlay 2.5s ease forwards;
+      z-index: 100;
+    }
+
+    @keyframes fadeOverlay {
+      0% { opacity: 1; }
+      80% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    @keyframes greenFlash {
+      0% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    #about.animate {
+      animation: scalePop .4s ease forwards;
+      background: #002f1f;
+      position: relative;
+    }
+
+    @keyframes scalePop {
+      0% { transform: scale(0.9); opacity: 0.5; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    .flame {
+      animation: flameUp 2s ease forwards;
+      background: linear-gradient(45deg, #ff4500, #ff9900, #000);
+      background-size: 400% 400%;
+    }
+
+    @keyframes flameUp {
+      0% { background-position: 0% 50%; }
+      100% { background-position: 100% 50%; }
+    }
+
+    .burnt {
+      background-color: #111;
+      border-color: #ff4500;
+      color: #ff4500 !important;
+    }
+
+    .webbed::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background: url('https://png.pngtree.com/png-vector/20220525/ourmid/pngtree-scary-spider-web-cobweb-spiderweb-png-image_4723487.png') center/cover no-repeat;
+      mix-blend-mode: lighten;
+      opacity: 100;
+    }
+
+    .force {
+      animation: shake .3s infinite;
+      background-color: #1a0000 !important;
+      border: 2px solid var(--neon) !important;
+    }
+
+    @keyframes shake {
+      0% { transform: translate(1px, 1px); }
+      25% { transform: translate(-1px, -2px); }
+      50% { transform: translate(2px, 0px); }
+      75% { transform: translate(-1px, 2px); }
+      100% { transform: translate(1px, -1px); }
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.8rem;
+      opacity: 0.6;
+    }
+    .card-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.card {
+  background: #1a1a1a;
+  border: 2px solid var(--blue);
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 280px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.card:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 15px var(--blue);
+}
+
+.card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: var(--blue);
+  margin-bottom: 1rem;
+}
+
+.card-description {
+  opacity: 0;
+  max-height: 0;
+  transition: opacity 0.5s ease, max-height 0.5s ease;
+  overflow: hidden;
+  font-size: 0.9rem;
+  color: #ccc;
+}
+
+.card:hover .card-description {
+  opacity: 1;
+  max-height: 500px;
+  margin-top: 1rem;
+}
+  </style>
+</head>
+<body>
+  <div id="start-screen">
+    <div id="start-text">Score a Goal to Enter the Page! (Assume this is the Stamford Bridge)</div>
+    <div id="goal-scene">
+      <div class="goal-post"></div>
+      <div class="ball" id="ball"></div>
+    </div>
+    <button id="shoot-btn">Shoot the Free Kick</button>
+  </div>
+
+  <div id="main-content">
+    <header>
+      <h2>Schrodinger's Fool</h2>
+      <h2 style="margin-top: -20px; font-size: 40px;">Yuvraj Arora</h2>
+      <div id="hype-buttons">
+        <button id="about-btn">About Me</button>
+        <button id="papers-btn">Papers</button>
+        <button id="publications-btn">Publications</button>
+        <button id="contact-btn">Contact</button>
+      </div>
+    </header>
+
+    <div class="section" id="about">
+      <p>I’m Yuvraj Arora -- high school IBDP student at Suncity School International Academia, Schrödinger’s Fool (simultaneously making sense and not), and someone who’s way too curious about how and why anything exists at all. I’m into quantum physics and cosmology, especially the parts where equations stop behaving and reality starts glitching.</p>
+    <br>
+    <p>My research interests are split across two fronts: understanding the role of quantum coherence in foundational physics, and figuring out whether Dark Matter is actually a thing or just a placeholder for our ignorance.</p>
+    <br>
+    <p>I’m also one of the rare string theory non-believers; not because I hate elegance, but because 10 dimensions and no testable predictions (yet) feels like a WattPad fanfiction. That said, I do have a soft spot for Loop Quantum Gravity; quantized spacetime just feels more grounded. As for quantum interpretations, I lean toward the Many-Worlds Interpretation because if there’s an alternate universe where Chelsea wins consistently, I’d like to believe in it.</p>
+    <br>
+    <p>Outside the world of physics, I support Chelsea through all the emotional trauma, believe Darth Vader did nothing wrong (objectively true (fight me -- in the politest manner)), and think Mega Charizard X could single-handedly defeat every living thing. Spider-Man is what keeps my remaining brain cells intact, and yes, since you're on this page, the animation probably told you enough about my Ben 10 obsession. I take time to warm up to people, but once I do, I tend to derail conversations with random facts, unhinged jokes, or sentences that don't make sense. I’m unfiltered. Sometimes it’s fun. Sometimes it’s chaos.</p>
+    <br>
+    <p>I’m also the Founder and President of Universe to Us, an initiative that teaches underprivileged students about existence—through physics, but in a way that’s creative, non-intimidating, and genuinely exciting. I co-founded Reverie Magazine too, which aims to preserve endangered languages—because some things are worth saving, even if they’re quiet.</p>
+    <br>
+    <p>Also, I might be good at Python and MySQL but I'm mediocre at best at HTML, CSS, and JavaScript, so...brace yourself. This website is NOT perfect.</p>
+    <br>
+    <p>Please note that this website does not include all my projects/papers since there are still a few in the zeroth draft stage. They will be added shortly.</p>
+    </div>
+
+    <div class="section" id="papers">
+        <div class="card-container">
+            <div class="card" onclick="window.open('Writing Samples (PDF) copy/Modeling Parkinson’s Neural Dysfunction via Coherence Decay.pdf', '_blank')">
+                <div class="card-title">Modeling Parkinson’s Neural Dysfunction via Coherence Decay</div>
+                <div class="card-description">
+                  Conducted research on modifying the FitzHugh-Nagumo model using principles rooted in quantum coherence. Created a new model which took into account the degradation of neural transmission that is a significant cause of Parkinson’s. In consideration at the CCIR Student Research Symposium. Click to view.
+                </div>
+              </div>
+            <div class="card" onclick="window.open('Writing Samples (PDF) copy/ARTIFICIALLY ADORNED FINAL (RESEARCH PROJECT).pdf', '_blank')">
+              <div class="card-title">Artificially Adorned</div>
+              <div class="card-description">
+                Studied AI bias in beauty perception. Combined literature review with independent findings. Currently undergoing rewrites. Click to view first draft. Written in collaboration with Trishaan Chaturvedi.
+              </div>
+            </div>
+          </div>
+          <div class="card-container">
+            <div class="card" onclick="window.open('Writing Samples (PDF) copy/An Investigation on Quantum Decoherence as a Cause of Emergent Gravitational Effects (LITERATURE REVIEW, CERN BL4S PROPOSAL).pdf', '_blank')">
+                <div class="card-title">An Investigation on Quantum Decoherence as a Cause of Emergent Gravitational Effects</div>
+                <div class="card-description">
+                  Proposed a high-energy beamline experiment at CERN to test whether quantum decoherence in materials could mimic gravitational anomalies, potentially offering an alternative to dark matter explanations. Explored theoretical links between quantum information loss and emergent gravity models (e.g., Verlinde’s theory) within an experimental physics framework. Currently in consideration at the Beamline For Schools competition. Click to view.
+                </div>
+              </div>
+            <div class="card" onclick="window.open('Writing Samples (PDF) copy/Project Plant Sonic (RESEARCH PROJECT).pdf', '_blank')">
+              <div class="card-title">Project Plant Sonic</div>
+              <div class="card-description">
+                Used Arduino to detect plant vibrations and make sound. Suggested plant responsiveness to touch. Currently undergoing rewrites. Written in collaboration with Angad Brar & Daksh Arora. Click to view first draft.
+              </div>
+            </div>
+          </div>
+    </div>
+    <div class="section" id="publications">
+        <div class="card-container">
+            <div class="card" onclick="window.open('http://dx.doi.org/10.2139/ssrn.5228428', '_blank')">
+                <div class="card-title">Dark Matter and the WIMPs as its Prime Candidates</div>
+                <div class="card-description">
+                    Literature review on the Dark Matter and its possible candidates with a special emphasis on the Weakly Interacting Massive Particles (WIMPs); it discusses the evidence of Dark Matter’s existence, provides a scope for future research, compares candidates, and more. Published in the Curieux Academic Journal’s 49th Issue. Available on SSRN. Click to view.
+                </div>
+              </div>
+            <div class="card" onclick="window.open('https://www.amazon.in/Arbiter-Gravity-Apparatus-Unity/dp/B0DT9ZLFM7/ref=sr_1_1?crid=1WEHFYFXEFEAK&dib=eyJ2IjoiMSJ9.qnxwkGYB-DTXMjYAUr-IoSQCn3zmZIejRMgdBAYL_kPDANunm8X2bOssX9SFtU1Fcl8mhEQ0HpNRBVVKWKYWYw.4DbKXCtI0xXcrfrQc2h-ivoDpHzCixTZJsRCMHNnQEg&dib_tag=se&keywords=The+Arbiter+of+Gravity&qid=1750625506&sprefix=the+arbiter+of+gravity%2Caps%2C269&sr=8-1', '_blank')">
+              <div class="card-title">The Arbiter of Gravity: The Apparatus of Unity</div>
+              <div class="card-description">
+                Science fiction novel based on real world physics (dark matter, string theory, quantum mechanics). Simplified advanced physics for young readers. Published in January 2025. Click to view.
+              </div>
+            </div>
+          </div>
+    </div>
+    <div class="section" id="contact">
+        <p> Got a question, idea, collaboration, debate, or existential crisis to share? </p>
+        <br>
+        LinkedIn: <a href="https://www.linkedin.com/in/yuvrajarora10/" target="_blank">Yuvraj Arora</a>  
+        <br>
+        Email: yuvrajarora1806 at gmail dot com
+      </div>
+
+    <footer> © Schrödinger's Fool </footer>
+  </div>
+
+  <script>
+    const ball = document.getElementById('ball');
+    const shootBtn = document.getElementById('shoot-btn');
+    const intro = document.getElementById('start-screen');
+    const main = document.getElementById('main-content');
+    const body = document.body;
+
+    const overlay = (text) => {
+      const glow = document.createElement('div');
+      glow.className = 'green-overlay';
+      document.body.appendChild(glow);
+      const txt = document.createElement('div');
+      txt.className = 'overlay-text';
+      txt.textContent = text;
+      document.body.appendChild(txt);
+      setTimeout(() => {
+        glow.remove();
+        txt.remove();
+      }, 2500);
+    };
+
+    shootBtn.onclick = () => {
+      ball.style.animation = 'shoot 1s forwards';
+      setTimeout(() => {
+        intro.remove();
+        main.style.display = 'block';
+      }, 1100);
+    };
+
+    const sections = document.querySelectorAll('.section');
+    const buttons = {
+      about: document.getElementById('about-btn'),
+      papers: document.getElementById('papers-btn'),
+      publications: document.getElementById('publications-btn'),
+      contact: document.getElementById('contact-btn')
+    };
+
+    function clearSections() {
+      sections.forEach(s => s.classList.remove('active', 'animate'));
+      body.className = '';
+      document.querySelectorAll('#hype-buttons button').forEach(btn => btn.classList.remove('burnt'));
+    }
+
+    function makeCompact() {
+      if (!body.classList.contains('compact')) body.classList.add('compact');
+    }
+
+    buttons.about.onclick = () => {
+      clearSections(); makeCompact();
+      overlay("IT’S HERO TIME!");
+      document.getElementById('about').classList.add('active', 'animate');
+    };
+
+    buttons.papers.onclick = () => {
+      clearSections(); makeCompact();
+      overlay("CHARIZARD USED FIRE BLAST!");
+      body.classList.add('flame');
+      setTimeout(() => {
+        body.classList.remove('flame');
+        document.querySelectorAll('#hype-buttons button').forEach(btn => btn.classList.add('burnt'));
+        document.getElementById('papers').classList.add('active');
+      }, 2000);
+    };
+
+    buttons.publications.onclick = () => {
+      clearSections(); makeCompact();
+      overlay("WAS SPIDER-MAN HERE?");
+      body.classList.add('webbed');
+      document.getElementById('publications').classList.add('active');
+    };
+
+    buttons.contact.onclick = () => {
+      clearSections(); makeCompact();
+      overlay("Was that...was that Darth Vader?");
+      body.classList.add('force');
+      document.getElementById('contact').classList.add('active');
+      setTimeout(() => body.classList.remove('force'), 5000);
+    };
+  </script>
+</body>
+</html>
