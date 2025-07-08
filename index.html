@@ -307,11 +307,120 @@
   max-height: 500px;
   margin-top: 1rem;
 }
+/* === CHAOS ADDITIONS START ===================================== */
+
+/* 1. Quantum Glitching overlay */
+@keyframes quantumGlitch {
+  0%   { transform: translate(0,0);   opacity: 1;   }
+  30%  { transform: translate(1px,-1px); opacity: .95; }
+  60%  { transform: translate(-1px,1px); opacity: .9;  }
+  100% { transform: translate(0,0);   opacity: 1;   }
+}
+body::after {                        /* << add under existing body rule or here */
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(0deg,
+              transparent,transparent 2px,rgba(255,255,255,.03) 3px);
+  pointer-events: none;
+  z-index: 9999;
+  animation: quantumGlitch .4s infinite;
+}
+
+/* 2. Floating equations / particle trails */
+.equation-float {
+  position: fixed;
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--ben10green);
+  opacity: .05;
+  pointer-events: none;
+  font-size: 2rem;
+  animation: floatChaos 30s linear infinite;
+}
+@keyframes floatChaos {
+  0%   { transform: translate(0,0)        rotate(0deg); }
+  100% { transform: translate(200vw,-200vh) rotate(1080deg); }
+}
+
+/* 3. Neon / cosmic flicker */
+@keyframes neonPulse {
+  0%   { color: var(--blue); }
+  50%  { color: var(--neon); text-shadow: 0 0 5px var(--neon); }
+  100% { color: var(--blue); }
+}
+h2, .card-title { animation: neonPulse 4s infinite alternate ease-in-out; }
+
+/* 4. Tilted / wiggling cards */
+@keyframes chaoticWiggle {
+  0%   { transform: rotate(-1deg) scale(1); }
+  50%  { transform: rotate( 2deg) scale(1.02); }
+  100% { transform: rotate(-1deg) scale(1); }
+}
+.card {                          /* append to existing .card rule, or keep here */
+  animation: chaoticWiggle 5s infinite ease-in-out alternate;
+}
+
+/* 5. Wiggle buttons (spacetime ripples) */
+@keyframes wiggle {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(1deg); }
+  50%  { transform: rotate(-1deg); }
+  75%  { transform: rotate(1.5deg); }
+  100% { transform: rotate(0deg); }
+}
+#hype-buttons button { animation: wiggle 3s infinite ease-in-out; }
+
+/* 6. Force-field hover (spacetime warp) */
+.card:hover { filter: url(#spacewarp); }
+
+/* 7. Cursor-trail dots */
+.trail-dot {
+  position: fixed;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--neon);
+  pointer-events: none;
+  opacity: 0.9;
+  transition: transform .3s, opacity .3s;
+}
+
+/* === CHAOTIC TEXT EFFECTS === */
+@keyframes textRadiate {
+  0% { text-shadow: 0 0 2px #0ff, 0 0 4px #f0f, 0 0 6px #0ff; }
+  50% { text-shadow: 0 0 6px #f0f, 0 0 8px #0ff, 0 0 10px #f0f; }
+  100% { text-shadow: 0 0 2px #0ff, 0 0 4px #f0f, 0 0 6px #0ff; }
+}
+@keyframes chaoticFontSize {
+  0%   { font-size: 1.1rem; transform: translateY(0); }
+  50%  { font-size: 1.2rem; transform: translateY(-1px); }
+  100% { font-size: 1.1rem; transform: translateY(0); }
+}
+.chaotic-text {
+  display: inline-block;
+  font-family: 'JetBrains Mono', monospace;
+  animation:
+    textRadiate 3s ease-in-out infinite,
+    chaoticFontSize 2s ease-in-out infinite;
+  transition: all 0.3s ease;
+}
+/* === CHAOS ADDITIONS END ======================================= */
   </style>
 </head>
 <body>
+    <!-- === CHAOS SVG FILTER & EQUATION HOLDER === -->
+<svg width="0" height="0" style="position:absolute">
+  <filter id="spacewarp">
+    <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" result="warp"/>
+    <feDisplacementMap in="SourceGraphic" in2="warp" scale="8"
+                       xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+<!-- container for floating formulas -->
+<div id="equation-layer"></div>
+<!-- === END CHAOS HTML === -->
   <div id="start-screen">
     <div id="start-text">Score a Goal to Enter the Page! (Assume this is the Stamford Bridge)</div>
+    <div id="start-text">DISCLAIMER: This website is extremely chaotic.</div>
     <div id="goal-scene">
       <div class="goal-post"></div>
       <div class="ball" id="ball"></div>
@@ -352,7 +461,7 @@
             <div class="card" onclick="window.open('Writing Samples (PDF) copy/Modeling Parkinson’s Neural Dysfunction via Coherence Decay.pdf', '_blank')">
                 <div class="card-title">Modeling Parkinson’s Neural Dysfunction via Coherence Decay</div>
                 <div class="card-description">
-                  Conducted research on modifying the FitzHugh-Nagumo model using principles rooted in quantum coherence. Created a new model which took into account the degradation of neural transmission that is a significant cause of Parkinson’s. In consideration at the CCIR Student Research Symposium. Click to view.
+                  Conducted research on modifying the FitzHugh-Nagumo model using principles rooted in quantum coherence. Created a new model which took into account the degradation of neural transmission that is a significant cause of Parkinson’s. Accepted for presentation at the CCIR Student Research Symposium scheduled for 29th & 30th July 2025 in-person at King's College, University of Cambridge
                 </div>
               </div>
               <div class="card" onclick="window.open('Writing Samples (PDF) copy/AkashaQ FINAL copy 2.pdf', '_blank')">
@@ -490,6 +599,30 @@
       document.getElementById('contact').classList.add('active');
       setTimeout(() => body.classList.remove('force'), 5000);
     };
+    /* === CHAOS JS ADDITIONS START ================================== */
+
+/* 4. Give each card a random initial tilt ----------------------- */
+document.querySelectorAll('.card').forEach(card=>{
+  const tilt = (Math.random()*4 - 2).toFixed(2); // -2deg … +2deg
+  card.style.transform = `rotate(${tilt}deg)`;
+});
+
+/* 5. Cursor trail (quantum path integral) ----------------------- */
+const trail = [];
+window.addEventListener('mousemove', e=>{
+  const dot = document.createElement('div');
+  dot.className = 'trail-dot';
+  dot.style.left = `${e.clientX-3}px`;
+  dot.style.top  = `${e.clientY-3}px`;
+  document.body.appendChild(dot);
+  trail.push(dot);
+  if (trail.length>25) { const old = trail.shift(); old.remove(); }
+  // fade
+  setTimeout(()=>dot.style.opacity=0, 50);
+  setTimeout(()=>dot.remove(), 350);
+});
+
+/* === CHAOS JS ADDITIONS END ==================================== */
   </script>
 </body>
 </html>
